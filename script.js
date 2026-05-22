@@ -12,7 +12,7 @@
 const CONFIG = {
   // URL do Google Apps Script após publicar como Web App
   // Substitua pela URL gerada na implantação
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyPrUlAykuA_aPq8ZSR55tm4do2nvXeC4YtouRv5HFdg1puNpAhGYZTuRkm2QgJ7PGe/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxOR0TPYA3HYHGcyuEcHY5CH_ZCtO9ger2FaunEndYK6CeenTf-s4Fj34nrAYKEHsiW/exec',
 
   // Data e hora da festa (ano, mês-1, dia, hora, minuto)
   // Mês: 0=Jan, 1=Feb, ..., 7=Agosto
