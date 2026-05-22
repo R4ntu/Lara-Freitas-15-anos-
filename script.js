@@ -31,7 +31,7 @@ const CONFIG = {
   },
 
   // Mensagem WhatsApp pós-confirmação
-  WHATSAPP_MSG: 'Olá! Confirmo minha presença na festa de 15 anos da Isabella ✨',
+  WHATSAPP_MSG: 'Olá! Confirmo minha presença na festa de 15 anos da Lara ✨',
 
   // Duração da tela de intro (ms)
   INTRO_DURATION: 4200,
