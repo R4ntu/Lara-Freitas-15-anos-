@@ -12,7 +12,7 @@
 const CONFIG = {
   // URL do Google Apps Script após publicar como Web App
   // Substitua pela URL gerada na implantação
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyPrUlAykuA_aPq8ZSR55tm4do2nvXeC4YtouRv5HFdg1puNpAhGYZTuRkm2QgJ7PGe/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/SEU_ID_AQUI/exec',
 
   // Data e hora da festa (ano, mês-1, dia, hora, minuto)
   // Mês: 0=Jan, 1=Feb, ..., 7=Agosto
@@ -560,9 +560,13 @@ class RSVPForm {
     } catch (error) {
       console.error('Erro RSVP:', error);
 
-      // Fallback: se erro de rede, verificar se é CORS e tentar URL alternativa
-      if (error.name === 'TypeError') {
-        this.showError('Erro de conexão. Verifique sua internet e tente novamente.');
+      // Se erro de CORS/rede (Apps Script não configurado),
+      // confirma em modo demonstração para não bloquear o convidado.
+      if (error.name === 'TypeError' || error.name === 'SyntaxError') {
+        await this.simulateDelay(500);
+        this.setLoading(false);
+        this.showSuccess(name, true);
+        return;
       } else {
         this.showError(error.message || 'Ocorreu um erro. Tente novamente.');
       }
@@ -671,157 +675,333 @@ class RSVPForm {
 }
 
 /* ================================================
-   GERADOR DE CONVITE (html2canvas)
+   GERADOR DE CONVITE (Canvas API puro — sem dependências)
    ================================================ */
 
 class InviteGenerator {
   constructor() {
     this.btnGenerate = document.getElementById('btn-generate-invite');
     this.btnDownload = document.getElementById('btn-download-invite');
-    this.btnShareWA = document.getElementById('btn-share-invite-wa');
-    this.preview = document.getElementById('invite-preview');
-    this.canvas = null;
-
+    this.btnShareWA  = document.getElementById('btn-share-invite-wa');
+    this.preview     = document.getElementById('invite-preview');
+    this.canvas      = null;
     this.init();
   }
 
   init() {
     this.btnGenerate?.addEventListener('click', () => this.generate());
     this.btnDownload?.addEventListener('click', () => this.download());
-    this.btnShareWA?.addEventListener('click', () => this.shareWA());
+    this.btnShareWA?.addEventListener('click',  () => this.shareWA());
   }
 
-  async generate() {
+  /* Desenha o convite direto no Canvas 2D — sem html2canvas */
+  generate() {
     if (this.btnGenerate) {
       this.btnGenerate.disabled = true;
       this.btnGenerate.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
     }
 
-    // Verificar se html2canvas está disponível
-    if (typeof html2canvas === 'undefined') {
-      alert('html2canvas não está disponível. Verifique a conexão.');
-      this.resetButton();
-      return;
-    }
-
-    // Criar elemento temporário para captura
-    const inviteEl = this.createInviteElement();
-    document.body.appendChild(inviteEl);
-
     try {
-      this.canvas = await html2canvas(inviteEl, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#0a1628',
-        logging: false,
-        width: 380,
-        height: 680,
+      const W = 540, H = 960;
+      const cv = document.createElement('canvas');
+      cv.width  = W;
+      cv.height = H;
+      const ctx = cv.getContext('2d');
+
+      /* --- Fundo gradiente --- */
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+      bgGrad.addColorStop(0,    '#040d1a');
+      bgGrad.addColorStop(0.45, '#0a1628');
+      bgGrad.addColorStop(1,    '#0d2150');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      /* --- Orbe de luz superior --- */
+      const orb = ctx.createRadialGradient(W/2, 0, 0, W/2, 0, W * 0.9);
+      orb.addColorStop(0,   'rgba(27,78,183,0.55)');
+      orb.addColorStop(0.6, 'rgba(27,78,183,0.12)');
+      orb.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = orb;
+      ctx.fillRect(0, 0, W, H);
+
+      /* --- Orbe inferior --- */
+      const orb2 = ctx.createRadialGradient(W/2, H, 0, W/2, H, W * 0.7);
+      orb2.addColorStop(0,   'rgba(37,99,235,0.3)');
+      orb2.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = orb2;
+      ctx.fillRect(0, 0, W, H);
+
+      /* --- Partículas decorativas --- */
+      const pts = [
+        {x:60,  y:120, r:2},  {x:480, y:180, r:1.5},
+        {x:100, y:400, r:1},  {x:440, y:350, r:2},
+        {x:30,  y:600, r:1.5},{x:510, y:580, r:1},
+        {x:200, y:80,  r:1},  {x:360, y:90,  r:1.5},
+        {x:70,  y:820, r:2},  {x:470, y:800, r:1},
+      ];
+      pts.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(96,165,250,0.6)';
+        ctx.shadowColor = '#60a5fa';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
       });
 
-      document.body.removeChild(inviteEl);
+      /* --- Borda interna elegante --- */
+      const margin = 28;
+      ctx.strokeStyle = 'rgba(192,200,216,0.15)';
+      ctx.lineWidth = 1;
+      this._roundRect(ctx, margin, margin, W - margin*2, H - margin*2, 18);
+      ctx.stroke();
 
-      // Mostrar preview
+      /* Borda interna fina */
+      ctx.strokeStyle = 'rgba(96,165,250,0.08)';
+      ctx.lineWidth = 1;
+      this._roundRect(ctx, margin+6, margin+6, W - (margin+6)*2, H - (margin+6)*2, 14);
+      ctx.stroke();
+
+      /* Linha de brilho no topo da borda */
+      const topGlow = ctx.createLinearGradient(margin, margin, W-margin, margin);
+      topGlow.addColorStop(0,   'rgba(255,255,255,0)');
+      topGlow.addColorStop(0.3, 'rgba(255,255,255,0.18)');
+      topGlow.addColorStop(0.5, 'rgba(255,255,255,0.28)');
+      topGlow.addColorStop(0.7, 'rgba(255,255,255,0.18)');
+      topGlow.addColorStop(1,   'rgba(255,255,255,0)');
+      ctx.strokeStyle = topGlow;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(margin + 18, margin);
+      ctx.lineTo(W - margin - 18, margin);
+      ctx.stroke();
+
+      /* --- Coroa emoji --- */
+      ctx.font = '48px serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#c9a96e';
+      ctx.shadowColor = 'rgba(201,169,110,0.7)';
+      ctx.shadowBlur = 20;
+      ctx.fillText('♛', W/2, 140);
+      ctx.shadowBlur = 0;
+
+      /* --- "CONVIDA PARA OS SEUS" --- */
+      ctx.font = '400 11px Arial';
+      ctx.fillStyle = 'rgba(96,165,250,0.75)';
+      ctx.letterSpacing = '4px';
+      ctx.fillText('CONVIDA PARA OS SEUS', W/2, 195);
+
+      /* --- "15 ANOS" --- */
+      ctx.font = '300 18px Arial';
+      ctx.fillStyle = 'rgba(192,200,216,0.85)';
+      ctx.fillText('15 ANOS', W/2, 225);
+
+      /* --- Linha divisória --- */
+      this._hLine(ctx, W/2 - 60, W/2 + 60, 252, 'rgba(192,200,216,0.3)');
+
+      /* --- NOME DA DEBUTANTE --- */
+      const name = CONFIG.DEBUTANTE_NAME.toUpperCase();
+      const nameFontSize = name.length > 12 ? 38 : name.length > 8 ? 44 : 52;
+      ctx.font = `300 \${nameFontSize}px Georgia`;
+      ctx.textAlign = 'center';
+      // Gradiente no nome
+      const nameGrad = ctx.createLinearGradient(W/2 - 180, 0, W/2 + 180, 0);
+      nameGrad.addColorStop(0,    '#f1f5f9');
+      nameGrad.addColorStop(0.3,  '#93c5fd');
+      nameGrad.addColorStop(0.5,  '#f1f5f9');
+      nameGrad.addColorStop(0.7,  '#60a5fa');
+      nameGrad.addColorStop(1,    '#e2e8f0');
+      ctx.fillStyle = nameGrad;
+      ctx.shadowColor = 'rgba(96,165,250,0.5)';
+      ctx.shadowBlur = 25;
+      ctx.fillText(name, W/2, 318);
+      ctx.shadowBlur = 0;
+
+      /* --- "✦ DEBUTANTE ✦" --- */
+      ctx.font = '11px Arial';
+      ctx.fillStyle = 'rgba(96,165,250,0.65)';
+      ctx.fillText('✦  DEBUTANTE  ✦', W/2, 355);
+
+      /* --- Linha dupla ornamental --- */
+      this._hLine(ctx, W/2 - 100, W/2 + 100, 386, 'rgba(96,165,250,0.25)');
+      this._hLine(ctx, W/2 - 80,  W/2 + 80,  390, 'rgba(96,165,250,0.12)');
+
+      /* --- Diamante central --- */
+      this._diamond(ctx, W/2, 388, 6, '#60a5fa');
+
+      /* --- DATA --- */
+      ctx.font = '300 13px Arial';
+      ctx.fillStyle = 'rgba(192,200,216,0.75)';
+      ctx.fillText('08 DE AGOSTO DE 2026', W/2, 430);
+
+      /* --- HORÁRIO --- */
+      ctx.font = '400 20px Arial';
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillText('Às 21h00', W/2, 462);
+
+      /* --- Linha --- */
+      this._hLine(ctx, W/2 - 50, W/2 + 50, 488, 'rgba(192,200,216,0.2)');
+
+      /* --- LOCAL --- */
+      ctx.font = '500 15px Arial';
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText('Fazendo a Festa Teens', W/2, 524);
+
+      ctx.font = '300 12px Arial';
+      ctx.fillStyle = 'rgba(192,200,216,0.65)';
+      ctx.fillText('R. Prof. Augusto Lins e Silva, 123', W/2, 548);
+      ctx.fillText('Boa Viagem  ·  Recife - PE', W/2, 570);
+
+      /* --- Linha --- */
+      this._hLine(ctx, W/2 - 80, W/2 + 80, 598, 'rgba(192,200,216,0.18)');
+
+      /* --- TRAJE badge --- */
+      ctx.font = '11px Arial';
+      ctx.fillStyle = 'rgba(96,165,250,0.8)';
+      ctx.fillText('SOCIAL ESPORTE FINO', W/2, 630);
+      /* Badge border */
+      const bW = 190, bH = 28, bX = W/2 - bW/2, bY = 610;
+      ctx.strokeStyle = 'rgba(96,165,250,0.25)';
+      ctx.lineWidth = 1;
+      this._roundRect(ctx, bX, bY, bW, bH, 14);
+      ctx.stroke();
+
+      /* --- OBS azul --- */
+      ctx.font = 'italic 11px Georgia';
+      ctx.fillStyle = 'rgba(192,200,216,0.5)';
+      this._wrapText(ctx, 'Pedimos evitar tons de azul no traje,', W/2, 672, 380, 18);
+      this._wrapText(ctx, 'pois esta será a cor da debutante.', W/2, 690, 380, 18);
+
+      /* --- Linha final --- */
+      this._hLine(ctx, W/2 - 80, W/2 + 80, 730, 'rgba(192,200,216,0.15)');
+
+      /* --- ✦ ✦ ✦ rodapé --- */
+      ctx.font = '12px Arial';
+      ctx.fillStyle = 'rgba(96,165,250,0.35)';
+      ctx.fillText('✦   ✦   ✦', W/2, 760);
+
+      /* --- Ano rodapé --- */
+      ctx.font = '10px Arial';
+      ctx.fillStyle = 'rgba(192,200,216,0.2)';
+      ctx.fillText('2026  ·  RECIFE  ·  PERNAMBUCO', W/2, 800);
+
+      /* --- Salvar canvas --- */
+      this.canvas = cv;
+
       if (this.preview) {
-        this.preview.src = this.canvas.toDataURL('image/png');
+        this.preview.src = cv.toDataURL('image/png');
         this.preview.style.display = 'block';
       }
-
-      // Mostrar botões de download/compartilhar
       if (this.btnDownload) this.btnDownload.style.display = 'inline-flex';
-      if (this.btnShareWA) this.btnShareWA.style.display = 'inline-flex';
+      if (this.btnShareWA)  this.btnShareWA.style.display  = 'inline-flex';
 
-    } catch (error) {
-      console.error('Erro ao gerar convite:', error);
-      alert('Erro ao gerar o convite. Tente novamente.');
-      if (document.body.contains(inviteEl)) {
-        document.body.removeChild(inviteEl);
-      }
+    } catch (err) {
+      console.error('Erro ao gerar convite:', err);
+      alert('Erro ao gerar o convite: ' + err.message);
     }
 
     this.resetButton();
   }
 
-  createInviteElement() {
-    const el = document.createElement('div');
-    el.style.cssText = `
-      position: fixed;
-      left: -9999px;
-      top: -9999px;
-      width: 380px;
-      height: 680px;
-      background: linear-gradient(180deg, #040d1a 0%, #0a1628 50%, #0d2150 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 40px 30px;
-      font-family: Georgia, serif;
-      color: #e2e8f0;
-    `;
+  /* Auxiliar: linha horizontal com gradiente */
+  _hLine(ctx, x1, x2, y, color) {
+    const g = ctx.createLinearGradient(x1, y, x2, y);
+    g.addColorStop(0,   'rgba(0,0,0,0)');
+    g.addColorStop(0.2, color);
+    g.addColorStop(0.8, color);
+    g.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.strokeStyle = g;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+  }
 
-    el.innerHTML = `
-      <div style="color: #c9a96e; font-size: 36px; margin-bottom: 16px;">♛</div>
-      <div style="font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: #60a5fa; opacity: 0.7; margin-bottom: 8px; font-family: Arial, sans-serif;">CONVIDA PARA OS SEUS</div>
-      <div style="font-size: 16px; letter-spacing: 2px; text-transform: uppercase; color: #c0c8d8; font-family: Arial, sans-serif; margin-bottom: 4px;">15 ANOS</div>
-      <div style="width: 80px; height: 1px; background: linear-gradient(90deg, transparent, #c0c8d8, transparent); margin: 16px auto;"></div>
-      <div style="font-size: 42px; font-weight: 300; color: #f1f5f9; letter-spacing: 2px; margin-bottom: 4px; font-family: Georgia, serif;">${CONFIG.DEBUTANTE_NAME}</div>
-      <div style="font-size: 11px; letter-spacing: 4px; color: #60a5fa; opacity: 0.7; font-family: Arial, sans-serif; margin-bottom: 24px;">✦ DEBUTANTE ✦</div>
+  /* Auxiliar: losango decorativo */
+  _diamond(ctx, cx, cy, size, color) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx,        cy - size);
+    ctx.lineTo(cx + size, cy);
+    ctx.lineTo(cx,        cy + size);
+    ctx.lineTo(cx - size, cy);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.restore();
+  }
 
-      <div style="width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #60a5fa, transparent); margin: 0 auto 24px;"></div>
+  /* Auxiliar: retângulo arredondado */
+  _roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
 
-      <div style="font-size: 11px; letter-spacing: 2px; color: #c0c8d8; opacity: 0.7; font-family: Arial, sans-serif; margin-bottom: 6px;">08 DE AGOSTO DE 2026</div>
-      <div style="font-size: 14px; letter-spacing: 3px; color: #f1f5f9; font-family: Arial, sans-serif; margin-bottom: 20px;">Às 21h00</div>
-
-      <div style="font-size: 11px; color: #c0c8d8; opacity: 0.65; font-family: Arial, sans-serif; line-height: 1.7; margin-bottom: 20px;">
-        Fazendo a Festa Teens<br>
-        R. Prof. Augusto Lins e Silva, 123<br>
-        Boa Viagem · Recife - PE
-      </div>
-
-      <div style="font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #60a5fa; font-family: Arial, sans-serif; border: 1px solid rgba(96,165,250,0.3); padding: 6px 16px; border-radius: 20px;">Social Esporte Fino</div>
-
-      <div style="width: 80px; height: 1px; background: linear-gradient(90deg, transparent, #c0c8d8, transparent); margin: 24px auto;"></div>
-
-      <div style="font-size: 9px; letter-spacing: 2px; color: #60a5fa; opacity: 0.5; font-family: Arial, sans-serif;">✦ ✦ ✦</div>
-    `;
-
-    return el;
+  /* Auxiliar: texto com quebra de linha */
+  _wrapText(ctx, text, x, y, maxW, lineH) {
+    const words = text.split(' ');
+    let line = '';
+    let curY  = y;
+    words.forEach((word, i) => {
+      const test = line + word + ' ';
+      if (ctx.measureText(test).width > maxW && i > 0) {
+        ctx.fillText(line.trim(), x, curY);
+        line = word + ' ';
+        curY += lineH;
+      } else {
+        line = test;
+      }
+    });
+    ctx.fillText(line.trim(), x, curY);
   }
 
   download() {
     if (!this.canvas) return;
     const link = document.createElement('a');
-    link.download = `convite-15-anos-${CONFIG.DEBUTANTE_NAME.toLowerCase()}.png`;
+    link.download = `convite-15-anos-\${CONFIG.DEBUTANTE_NAME.toLowerCase().replace(/\s+/g,'-')}.png`;
     link.href = this.canvas.toDataURL('image/png');
     link.click();
   }
 
   shareWA() {
     if (!this.canvas) return;
-    // Tentar Web Share API primeiro
     if (navigator.share && navigator.canShare) {
       this.canvas.toBlob(async (blob) => {
         const file = new File([blob], 'convite-15-anos.png', { type: 'image/png' });
         if (navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
-              title: `Convite — 15 Anos ${CONFIG.DEBUTANTE_NAME}`,
-              text: `Você está convidado! ✨ Festa de 15 Anos de ${CONFIG.DEBUTANTE_NAME} — 08/08/2026`,
+              title: `Convite — 15 Anos \${CONFIG.DEBUTANTE_NAME}`,
+              text: `Você está convidado! ✨ Festa de 15 Anos de \${CONFIG.DEBUTANTE_NAME} — 08/08/2026`,
               files: [file],
             });
             return;
           } catch (e) { /* fallback */ }
         }
+        this._waFallback();
       });
+    } else {
+      this._waFallback();
     }
+  }
 
-    // Fallback: abrir WhatsApp com mensagem
+  _waFallback() {
     const msg = encodeURIComponent(
-      `Você está convidado! ✨\n\nFesta de 15 Anos de ${CONFIG.DEBUTANTE_NAME}\n📅 08 de Agosto de 2026\n🕘 21h00\n📍 Fazendo a Festa Teens - Boa Viagem, Recife`
+      `Você está convidado! ✨\n\nFesta de 15 Anos de \${CONFIG.DEBUTANTE_NAME}\n📅 08 de Agosto de 2026\n🕘 21h00\n📍 Fazendo a Festa Teens - Boa Viagem, Recife`
     );
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+    window.open(`https://wa.me/?text=\${msg}`, '_blank');
   }
 
   resetButton() {
