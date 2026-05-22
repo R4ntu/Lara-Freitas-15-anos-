@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0a1628" />
+
+  <!-- SEO & Compartilhamento WhatsApp -->
+  <title>✨ Você está convidado — 15 Anos Isabella</title>
+  <meta name="description" content="Convite especial para os 15 anos de Isabella • 08 de Agosto de 2026 • Uma noite inesquecível em Recife" />
+  <meta property="og:title" content="✨ Convite — 15 Anos Isabella" />
+  <meta property="og:description" content="Uma noite inesquecível. 08 de Agosto de 2026 · 21h00 · Recife - PE" />
+  <meta property="og:image" content="og-cover.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<!-- ================================================
+     CANVAS DE PARTÍCULAS GLOBAL
+     ================================================ -->
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<!-- ================================================
+     TELA DE ABERTURA CINEMATOGRÁFICA
+     ================================================ -->
+<div id="intro-screen" role="presentation" aria-hidden="true">
+
+  <!-- Fundo animado -->
+  <div class="intro-bg"></div>
+  <div class="intro-orb intro-orb-1"></div>
+  <div class="intro-orb intro-orb-2"></div>
+  <div class="intro-orb intro-orb-3"></div>
+  <canvas id="intro-canvas"></canvas>
+
+  <!-- Conteúdo da intro -->
+  <div class="intro-content">
+    <span class="intro-line">Uma noite...</span>
+    <span class="intro-line">que ficará para sempre na memória.</span>
+
+    <div class="intro-ornament">
+      <div class="intro-ornament-line"></div>
+      <div class="intro-ornament-diamond"></div>
+      <div class="intro-ornament-line"></div>
+    </div>
+
+    <span class="intro-line">Você está convidado</span>
+  </div>
+
+  <!-- Barra de progresso elegante -->
+  <div class="intro-loader" aria-label="Carregando...">
+    <div class="intro-loader-bar">
+      <div class="intro-loader-fill"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================
+     CONTEÚDO PRINCIPAL
+     ================================================ -->
+<div id="main-content">
+
+  <!-- NAVEGAÇÃO FLUTUANTE -->
+  <nav class="nav-float" aria-label="Navegação">
+    <span class="nav-logo">Isabella · XV</span>
+    <div style="display:flex;gap:0.75rem;align-items:center;">
+      <a href="#rsvp" style="
+        font-family: var(--font-display);
+        font-size: 0.6rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--silver);
+        opacity: 0.6;
+        text-decoration: none;
+        padding: 0.4rem 0.9rem;
+        border: 1px solid var(--glass-border);
+        border-radius: 50px;
+        transition: all 0.3s ease;
+      "
+      onmouseenter="this.style.opacity='1'"
+      onmouseleave="this.style.opacity='0.6'"
+      >
+        Confirmar
+      </a>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       SEÇÃO HERO
+       ============================================ -->
+  <section class="hero" aria-labelledby="hero-name">
+
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-light-veil" aria-hidden="true"></div>
+
+    <div class="hero-content">
+
+      <!-- Coroa decorativa -->
+      <div class="hero-crown" data-aos="fade-down" data-aos-duration="1000">
+        <div class="crown-line"></div>
+        <i class="fas fa-crown crown-icon" aria-hidden="true"></i>
+        <div class="crown-line"></div>
+      </div>
+
+      <!-- Texto acima do nome -->
+      <p class="hero-supra" data-aos="fade-in" data-aos-delay="150">
+        celebra com alegria
+      </p>
+
+      <!-- Nome principal -->
+      <h1 class="hero-name" id="hero-name" data-name="Isabella" data-aos="scale-up" data-aos-delay="200">
+        Isabella
+      </h1>
+
+      <!-- 15 anos -->
+      <p class="hero-fifteen" data-aos="fade-in" data-aos-delay="350">
+        seus quinze anos
+      </p>
+
+      <!-- Divisor ornamental -->
+      <div class="hero-divider" data-aos="fade-in" data-aos-delay="450">
+        <div class="divider-line"></div>
+        <div class="divider-gem" aria-hidden="true"></div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Data de exibição -->
+      <p class="hero-date-display" data-aos="fade-in" data-aos-delay="550">
+        8 de Agosto de 2026
+      </p>
+
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONTAGEM REGRESSIVA
+       ============================================ -->
+  <section class="countdown-section section text-center" aria-labelledby="countdown-title">
+
+    <span class="section-label">Faltam apenas</span>
+    <h2 class="section-title" id="countdown-title" data-aos="fade-up">
+      A Festa Começa Em
+    </h2>
+
+    <div class="countdown-wrapper glass-card" data-aos="fade-up" data-aos-delay="150">
+      <div class="countdown-item">
+        <span class="countdown-num" id="cd-days" aria-live="polite" aria-label="Dias">00</span>
+        <span class="countdown-label">Dias</span>
+      </div>
+
+      <div class="countdown-sep" aria-hidden="true">
+        <div class="countdown-sep-dots">
+          <span></span><span></span>
+        </div>
+      </div>
+
+      <div class="countdown-item">
+        <span class="countdown-num" id="cd-hours" aria-live="polite" aria-label="Horas">00</span>
+        <span class="countdown-label">Horas</span>
+      </div>
+
+      <div class="countdown-sep" aria-hidden="true">
+        <div class="countdown-sep-dots">
+          <span></span><span></span>
+        </div>
+      </div>
+
+      <div class="countdown-item">
+        <span class="countdown-num" id="cd-minutes" aria-live="polite" aria-label="Minutos">00</span>
+        <span class="countdown-label">Min</span>
+      </div>
+
+      <div class="countdown-sep" aria-hidden="true">
+        <div class="countdown-sep-dots">
+          <span></span><span></span>
+        </div>
+      </div>
+
+      <div class="countdown-item">
+        <span class="countdown-num" id="cd-seconds" aria-live="polite" aria-label="Segundos">00</span>
+        <span class="countdown-label">Seg</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================================
+       MENSAGEM EMOCIONAL
+       ============================================ -->
+  <section class="message-section section" aria-label="Mensagem especial">
+
+    <div class="glass-card" style="padding: 2.5rem 1.75rem;" data-aos="fade-up">
+
+      <div aria-hidden="true" style="
+        text-align:center;
+        font-size: 1.5rem;
+        color: var(--crystal-blue);
+        margin-bottom: 1.25rem;
+        opacity: 0.6;
+        letter-spacing: 0.5em;
+      ">✦ ✦ ✦</div>
+
+      <blockquote class="message-quote">
+        Há momentos que guardam uma magia especial —
+        aqueles em que o tempo parece se encantar
+        e cada riso, cada abraço, cada olhar
+        se transforma em memória eterna.
+        <br><br>
+        Este é um desses momentos.
+        E eu quero celebrá-lo ao seu lado.
+      </blockquote>
+
+      <p class="message-sig">— com todo amor, Isabella</p>
+
+    </div>
+
+  </section>
+
+  <!-- ============================================
+       DATA, HORA E LOCAL
+       ============================================ -->
+  <section class="section" aria-labelledby="event-details-title">
+
+    <span class="section-label">O Grande Momento</span>
+    <h2 class="section-title" id="event-details-title" data-aos="fade-up">
+      Detalhes da Festa
+    </h2>
+
+    <!-- Grid data/hora -->
+    <div class="event-info-grid" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="glass-card event-info-item">
+        <div class="event-info-icon" aria-hidden="true">
+          <i class="fas fa-calendar-star"></i>
+        </div>
+        <span class="event-info-value">08/08/2026</span>
+        <span class="event-info-label">Data</span>
+      </div>
+
+      <div class="glass-card event-info-item">
+        <div class="event-info-icon" aria-hidden="true">
+          <i class="fas fa-clock"></i>
+        </div>
+        <span class="event-info-value">21h00</span>
+        <span class="event-info-label">Horário</span>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ============================================
+       LOCALIZAÇÃO
+       ============================================ -->
+  <section class="location-section section" aria-labelledby="location-title">
+
+    <span class="section-label">Onde acontece</span>
+    <h2 class="section-title" id="location-title" data-aos="fade-up">
+      Local do Evento
+    </h2>
+
+    <div class="glass-card" style="padding: 2rem 1.5rem; margin-top: 1.5rem;" data-aos="fade-up" data-aos-delay="100">
+
+      <div style="
+        font-size: 2rem;
+        color: var(--crystal-blue);
+        margin-bottom: 1rem;
+        filter: drop-shadow(0 0 15px rgba(96,165,250,0.4));
+      " aria-hidden="true">
+        <i class="fas fa-map-marker-alt"></i>
+      </div>
+
+      <address class="location-address" style="font-style: normal;">
+        <strong>Fazendo a Festa Teens</strong>
+        R. Prof. Augusto Lins e Silva, 123<br>
+        Boa Viagem · Recife - PE<br>
+        <span style="font-size:0.85rem;opacity:0.6;">CEP: 51130-030</span>
+      </address>
+
+      <a
+        id="maps-btn"
+        href="https://maps.google.com/?q=R.+Prof.+Augusto+Lins+e+Silva,+123,+Boa+Viagem,+Recife,+PE,+51130-030"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-maps"
+        aria-label="Abrir localização no Google Maps"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <i class="fas fa-location-arrow" aria-hidden="true"></i>
+        <span>Abrir no Google Maps</span>
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- ============================================
+       TRAJE
+       ============================================ -->
+  <section class="dress-section section" aria-labelledby="dress-title">
+
+    <span class="section-label">Dress Code</span>
+    <h2 class="section-title" id="dress-title" data-aos="fade-up">
+      Traje da Noite
+    </h2>
+
+    <div data-aos="fade-up" data-aos-delay="100">
+      <div class="dress-code-badge" aria-label="Traje: Social Esporte Fino">
+        <i class="fas fa-shirt" aria-hidden="true"></i>
+        &nbsp; Social Esporte Fino
+      </div>
+    </div>
+
+    <div class="dress-obs glass-card" data-aos="fade-up" data-aos-delay="200">
+      <p>
+        Para tornar este momento ainda mais especial,
+        pedimos gentilmente evitar tons de
+        <strong style="color:var(--crystal-blue);">azul</strong>
+        no traje, pois esta será a cor escolhida pela debutante.
+        <br><br>
+        <span style="font-size:0.85rem;opacity:0.7;">
+          Agradecemos a sua compreensão e elegância. ✨
+        </span>
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ============================================
+       GALERIA DE FOTOS
+       ============================================ -->
+  <section class="gallery-section section" aria-labelledby="gallery-title">
+
+    <span class="section-label">Memórias</span>
+    <h2 class="section-title" id="gallery-title" data-aos="fade-up">
+      Galeria
+    </h2>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="50">
+      Momentos que constroem a história
+    </p>
+
+    <div class="gallery-grid" data-aos="fade-up" data-aos-delay="150">
+
+      <!-- Item 1 — Principal (substitua pelo src da foto real) -->
+      <div class="gallery-item" tabindex="0" aria-label="Foto principal da debutante">
+        <div class="gallery-placeholder">
+          <i class="fas fa-camera" aria-hidden="true"></i>
+          <span>Foto Principal</span>
+        </div>
+        <!-- Descomente e adicione src="caminho/da/foto.jpg" quando tiver as fotos:
+        <img src="foto-1.jpg" alt="Isabella" loading="lazy" />
+        -->
+      </div>
+
+      <!-- Item 2 -->
+      <div class="gallery-item" tabindex="0" aria-label="Foto 2">
+        <div class="gallery-placeholder">
+          <i class="fas fa-images" aria-hidden="true"></i>
+          <span>Foto 2</span>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="gallery-item" tabindex="0" aria-label="Foto 3">
+        <div class="gallery-placeholder">
+          <i class="fas fa-images" aria-hidden="true"></i>
+          <span>Foto 3</span>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="
+      text-align: center;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--silver);
+      opacity: 0.35;
+      margin-top: 1rem;
+    ">
+      Adicione suas fotos no arquivo index.html
+    </p>
+
+  </section>
+
+  <!-- ============================================
+       RSVP — CONFIRMAR PRESENÇA
+       ============================================ -->
+  <section class="rsvp-section section" id="rsvp" aria-labelledby="rsvp-title">
+
+    <span class="section-label">Sua presença</span>
+    <h2 class="section-title" id="rsvp-title" data-aos="fade-up">
+      Confirmar Presença
+    </h2>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="50">
+      Aguardamos você nesta noite mágica
+    </p>
+
+    <div class="glass-card" style="padding: 2rem 1.5rem; margin-top: 1.5rem;" data-aos="fade-up" data-aos-delay="150">
+
+      <!-- Ícone decorativo -->
+      <div style="
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 1.25rem;
+        color: var(--crystal-blue);
+        filter: drop-shadow(0 0 20px rgba(96,165,250,0.4));
+      " aria-hidden="true">
+        <i class="fas fa-envelope-open-text"></i>
+      </div>
+
+      <!-- Formulário RSVP -->
+      <form id="rsvp-form" class="rsvp-form" novalidate aria-label="Formulário de confirmação de presença">
+
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="rsvp-name"
+            name="nome"
+            class="input-premium"
+            placeholder="Seu nome completo"
+            autocomplete="name"
+            maxlength="100"
+            aria-label="Nome completo"
+            aria-required="true"
+            aria-describedby="rsvp-error-msg"
+          />
+          <div class="input-glow" aria-hidden="true"></div>
+          <span id="rsvp-error-msg" class="field-error" role="alert"></span>
+        </div>
+
+        <button
+          type="submit"
+          id="rsvp-submit"
+          class="btn-rsvp"
+          aria-label="Confirmar presença na festa"
+        >
+          <span class="btn-rsvp-text">
+            <i class="fas fa-heart" style="margin-right:0.5rem;" aria-hidden="true"></i>
+            Confirmar Presença
+          </span>
+          <span class="btn-rsvp-loading" aria-live="polite">
+            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+            &nbsp;Enviando…
+          </span>
+        </button>
+
+      </form>
+
+      <!-- Feedback de sucesso/erro -->
+      <div id="rsvp-feedback" class="rsvp-feedback" role="status" aria-live="polite"></div>
+
+    </div>
+
+    <p style="
+      text-align: center;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--silver);
+      opacity: 0.3;
+      margin-top: 1rem;
+    ">
+      Sua confirmação será registrada e você receberá<br>
+      um lembrete pelo WhatsApp
+    </p>
+
+  </section>
+
+  <!-- ============================================
+       GERAR CONVITE
+       ============================================ -->
+  <section class="invite-gen-section section" aria-labelledby="invite-gen-title">
+
+    <span class="section-label">Compartilhe</span>
+    <h2 class="section-title" id="invite-gen-title" data-aos="fade-up">
+      Convite Digital
+    </h2>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="50">
+      Gere e compartilhe uma versão do convite
+    </p>
+
+    <div style="margin-top: 1.5rem;" data-aos="fade-up" data-aos-delay="150">
+      <button
+        id="btn-generate-invite"
+        class="btn-generate"
+        aria-label="Gerar convite para download"
+      >
+        <i class="fas fa-magic" aria-hidden="true"></i>
+        Gerar Convite
+      </button>
+
+      <button
+        id="btn-download-invite"
+        class="btn-generate"
+        style="display:none;"
+        aria-label="Baixar convite em PNG"
+      >
+        <i class="fas fa-download" aria-hidden="true"></i>
+        Baixar PNG
+      </button>
+
+      <button
+        id="btn-share-invite-wa"
+        class="btn-generate"
+        style="display:none;"
+        aria-label="Compartilhar convite no WhatsApp"
+      >
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+        Compartilhar
+      </button>
+    </div>
+
+    <!-- Preview do convite gerado -->
+    <img
+      id="invite-preview"
+      alt="Preview do convite gerado"
+      aria-live="polite"
+    />
+
+  </section>
+
+  <!-- ============================================
+       RODAPÉ
+       ============================================ -->
+  <footer role="contentinfo">
+
+    <div class="footer-ornament" aria-hidden="true">
+      <div class="footer-ornament-line"></div>
+      <i class="fas fa-crown footer-ornament-icon"></i>
+      <div class="footer-ornament-line"></div>
+    </div>
+
+    <p class="footer-text">
+      Uma noite mágica aguarda você
+    </p>
+
+    <p style="
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--crystal-blue);
+      opacity: 0.5;
+      margin-top: 0.5rem;
+      letter-spacing: 0.15em;
+    ">
+      Isabella · XV Anos
+    </p>
+
+    <p class="footer-year">2026 · Recife · Pernambuco</p>
+
+  </footer>
+
+</div>
+<!-- /main-content -->
+
+<!-- ================================================
+     BOTÕES FLUTUANTES
+     ================================================ -->
+
+<!-- WhatsApp -->
+<a
+  href="https://wa.me/?text=Olá!%20Confirmo%20minha%20presença%20na%20festa%20de%2015%20anos%20✨"
+  target="_blank"
+  rel="noopener noreferrer"
+  class="whatsapp-float"
+  aria-label="Compartilhar no WhatsApp"
+  title="WhatsApp"
+>
+  <i class="fab fa-whatsapp" aria-hidden="true"></i>
+</a>
+
+<!-- Música -->
+<button
+  class="music-float"
+  aria-label="Controlar música de fundo"
+  title="Tocar/Pausar música"
+>
+  <i class="fas fa-music music-icon" aria-hidden="true"></i>
+</button>
+
+<!-- ================================================
+     SCRIPTS
+     ================================================ -->
+
+<!-- html2canvas para gerar convite -->
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+  integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+  defer
+></script>
+
+<!-- Script principal -->
+<script src="script.js" defer></script>
+
+</body>
+</html>
