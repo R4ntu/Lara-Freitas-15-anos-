@@ -1395,3 +1395,23 @@ footer {
   background: var(--sapphire);
   border-radius: 10px;
 }
+
+/* ================================================
+   RSVP — CONTROLE DE QUANTIDADE
+   ================================================ */
+
+#qty-minus:hover, #qty-plus:hover {
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  background: rgba(96, 165, 250, 0.08) !important;
+  color: var(--crystal-blue);
+  transform: scale(1.1);
+}
+
+#qty-confirm {
+  width: 100%;
+}
+
+/* Ajuste music float quando não há botão WhatsApp */
+.music-float {
+  bottom: 1.25rem !important;
+}

@@ -12,7 +12,7 @@
 const CONFIG = {
   // URL do Google Apps Script após publicar como Web App
   // Substitua pela URL gerada na implantação
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyPrUlAykuA_aPq8ZSR55tm4do2nvXeC4YtouRv5HFdg1puNpAhGYZTuRkm2QgJ7PGe/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/SEU_ID_AQUI/exec',
 
   // Data e hora da festa (ano, mês-1, dia, hora, minuto)
   // Mês: 0=Jan, 1=Feb, ..., 7=Agosto
@@ -437,60 +437,154 @@ class MusicPlayer {
 }
 
 /* ================================================
-   RSVP — CONFIRMAÇÃO DE PRESENÇA
+   RSVP — CONFIRMAÇÃO DE PRESENÇA (multi-convidado)
    ================================================ */
 
 class RSVPForm {
   constructor() {
-    this.form = document.getElementById('rsvp-form');
-    this.nameInput = document.getElementById('rsvp-name');
-    this.submitBtn = document.getElementById('rsvp-submit');
-    this.feedback = document.getElementById('rsvp-feedback');
-    this.errorMsg = document.getElementById('rsvp-error-msg');
+    this.stepQty      = document.getElementById('rsvp-step-qty');
+    this.form         = document.getElementById('rsvp-form');
+    this.formTitle    = document.getElementById('rsvp-form-title');
+    this.namesContainer = document.getElementById('rsvp-names-container');
+    this.submitBtn    = document.getElementById('rsvp-submit');
+    this.feedback     = document.getElementById('rsvp-feedback');
+    this.errorMsg     = document.getElementById('rsvp-error-msg');
+    this.backBtn      = document.getElementById('rsvp-back');
 
+    this.qtyDisplay   = document.getElementById('qty-display');
+    this.qtyMinus     = document.getElementById('qty-minus');
+    this.qtyPlus      = document.getElementById('qty-plus');
+    this.qtyConfirm   = document.getElementById('qty-confirm');
+
+    this.quantity     = 1;
     this.isSubmitting = false;
 
     this.init();
   }
 
   init() {
-    if (!this.form) return;
+    if (!this.stepQty) return;
 
-    this.form.addEventListener('submit', (e) => {
+    // Controles de quantidade
+    this.qtyMinus?.addEventListener('click', () => this.changeQty(-1));
+    this.qtyPlus?.addEventListener('click',  () => this.changeQty(+1));
+    this.qtyConfirm?.addEventListener('click', () => this.goToForm());
+
+    // Voltar ao step 1
+    this.backBtn?.addEventListener('click', () => this.goToQty());
+
+    // Submit
+    this.form?.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!this.isSubmitting) this.submit();
     });
+  }
 
-    // Limpar erro ao digitar
-    this.nameInput?.addEventListener('input', () => {
-      this.clearError();
-    });
+  changeQty(delta) {
+    this.quantity = Math.max(1, Math.min(10, this.quantity + delta));
+    if (this.qtyDisplay) this.qtyDisplay.textContent = this.quantity;
+
+    // Feedback visual nos botões
+    if (this.qtyMinus) this.qtyMinus.style.opacity = this.quantity <= 1  ? '0.3' : '1';
+    if (this.qtyPlus)  this.qtyPlus.style.opacity  = this.quantity >= 10 ? '0.3' : '1';
+  }
+
+  goToForm() {
+    if (this.stepQty) this.stepQty.style.display = 'none';
+    if (this.form)    this.form.style.display = 'flex';
+
+    // Atualizar título
+    const plural = this.quantity === 1 ? 'convidado' : 'convidados';
+    if (this.formTitle) {
+      this.formTitle.textContent =
+        `Preencha o nome ${this.quantity === 1 ? 'do' : 'dos'} ${this.quantity} ${plural}`;
+    }
+
+    // Gerar campos de nome
+    this.buildNameFields();
+
+    // Foco no primeiro campo
+    setTimeout(() => {
+      this.namesContainer?.querySelector('.input-premium')?.focus();
+    }, 100);
+  }
+
+  goToQty() {
+    if (this.form)    this.form.style.display = 'none';
+    if (this.stepQty) this.stepQty.style.display = 'block';
+    this.clearError();
+  }
+
+  buildNameFields() {
+    if (!this.namesContainer) return;
+    this.namesContainer.innerHTML = '';
+
+    for (let i = 0; i < this.quantity; i++) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'input-wrapper';
+
+      const label = document.createElement('label');
+      label.style.cssText = `
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--crystal-blue);
+        opacity: 0.65;
+        margin-bottom: 0.35rem;
+      `;
+      label.textContent = this.quantity === 1 ? 'Nome completo' : `Convidado ${i + 1}`;
+      label.setAttribute('for', `rsvp-name-${i}`);
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = `rsvp-name-${i}`;
+      input.name = `nome_${i}`;
+      input.className = 'input-premium';
+      input.placeholder = this.quantity === 1 ? 'Seu nome completo' : `Nome do convidado ${i + 1}`;
+      input.autocomplete = i === 0 ? 'name' : 'off';
+      input.maxLength = 100;
+      input.setAttribute('aria-label', `Nome do convidado ${i + 1}`);
+
+      const glow = document.createElement('div');
+      glow.className = 'input-glow';
+      glow.setAttribute('aria-hidden', 'true');
+
+      input.addEventListener('input', () => this.clearError());
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(input);
+      wrapper.appendChild(glow);
+      this.namesContainer.appendChild(wrapper);
+    }
+  }
+
+  getNames() {
+    const inputs = this.namesContainer?.querySelectorAll('.input-premium') || [];
+    return Array.from(inputs).map(inp => inp.value.trim());
   }
 
   validate() {
-    const name = this.nameInput?.value?.trim() || '';
+    const names = this.getNames();
+    for (let i = 0; i < names.length; i++) {
+      const n = names[i];
+      const label = this.quantity === 1 ? 'Seu nome' : `Convidado ${i + 1}`;
 
-    if (!name) {
-      this.showError('Por favor, informe seu nome completo.');
-      return false;
+      if (!n) {
+        this.showError(`${label}: preencha o nome completo.`);
+        this.namesContainer?.querySelectorAll('.input-premium')[i]?.focus();
+        return false;
+      }
+      if (n.length < 2) {
+        this.showError(`${label}: nome muito curto.`);
+        return false;
+      }
+      if (!/[a-zA-ZÀ-ÿ]/.test(n)) {
+        this.showError(`${label}: nome inválido.`);
+        return false;
+      }
     }
-
-    if (name.length < 2) {
-      this.showError('Nome muito curto.');
-      return false;
-    }
-
-    if (name.length > 100) {
-      this.showError('Nome muito longo.');
-      return false;
-    }
-
-    const hasLetter = /[a-zA-ZÀ-ÿ]/.test(name);
-    if (!hasLetter) {
-      this.showError('Digite um nome válido.');
-      return false;
-    }
-
     return true;
   }
 
@@ -499,24 +593,10 @@ class RSVPForm {
       this.errorMsg.textContent = msg;
       this.errorMsg.classList.add('visible');
     }
-
-    if (this.nameInput) {
-      this.nameInput.style.borderColor = 'rgba(248, 113, 113, 0.5)';
-      // Shake animation
-      this.nameInput.animate([
-        { transform: 'translateX(0)' },
-        { transform: 'translateX(-6px)' },
-        { transform: 'translateX(6px)' },
-        { transform: 'translateX(-4px)' },
-        { transform: 'translateX(4px)' },
-        { transform: 'translateX(0)' },
-      ], { duration: 400, easing: 'ease-out' });
-    }
   }
 
   clearError() {
     if (this.errorMsg) this.errorMsg.classList.remove('visible');
-    if (this.nameInput) this.nameInput.style.borderColor = '';
   }
 
   setLoading(loading) {
@@ -530,42 +610,46 @@ class RSVPForm {
   async submit() {
     if (!this.validate()) return;
 
-    const name = this.nameInput.value.trim();
+    const names = this.getNames();
     this.setLoading(true);
     this.clearError();
 
-    // Verificar se URL está configurada
-    if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.includes('SEU_ID_AQUI')) {
-      // Modo demo — simular envio bem-sucedido
+    const isDemoMode = !CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.includes('SEU_ID_AQUI');
+
+    if (isDemoMode) {
       await this.simulateDelay(1500);
       this.setLoading(false);
-      this.showSuccess(name, true);
+      this.showSuccess(names, true);
       return;
     }
 
+    // Enviar cada nome individualmente ao Google Sheets
     try {
-      const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome: name }),
-      });
+      const promises = names.map(nome =>
+        fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome }),
+        }).then(r => r.json())
+      );
 
-      const data = await response.json();
+      const results = await Promise.all(promises);
+      const allOk = results.every(r => r.success);
 
-      if (data.success) {
-        this.showSuccess(name, false);
+      if (allOk) {
+        this.showSuccess(names, false);
       } else {
-        throw new Error(data.message || 'Erro ao confirmar presença.');
+        const failed = results.find(r => !r.success);
+        throw new Error(failed?.message || 'Erro ao salvar confirmação.');
       }
     } catch (error) {
       console.error('Erro RSVP:', error);
 
-      // Se erro de CORS/rede (Apps Script não configurado),
-      // confirma em modo demonstração para não bloquear o convidado.
       if (error.name === 'TypeError' || error.name === 'SyntaxError') {
+        // Rede/CORS — modo fallback
         await this.simulateDelay(500);
         this.setLoading(false);
-        this.showSuccess(name, true);
+        this.showSuccess(names, true);
         return;
       } else {
         this.showError(error.message || 'Ocorreu um erro. Tente novamente.');
@@ -575,102 +659,80 @@ class RSVPForm {
     }
   }
 
-  showSuccess(name, isDemo) {
-    // Esconder formulário
-    if (this.form) {
-      this.form.style.display = 'none';
-    }
+  showSuccess(names, isDemo) {
+    // Esconder tudo do form
+    if (this.stepQty) this.stepQty.style.display = 'none';
+    if (this.form)    this.form.style.display = 'none';
 
-    // Mostrar feedback
+    const plural = names.length === 1 ? 'presença confirmada' : 'presenças confirmadas';
+    const namesList = names.map((n, i) =>
+      `<span style="display:block; color:var(--silver-glow); font-weight:400;">
+        ${names.length > 1 ? `${i+1}. ` : ''}${this.escapeHtml(n)}
+      </span>`
+    ).join('');
+
     if (this.feedback) {
       this.feedback.className = 'rsvp-feedback success';
       this.feedback.style.display = 'block';
       this.feedback.innerHTML = `
         <span class="feedback-icon">✨</span>
-        <div class="feedback-title">Presença Confirmada!</div>
+        <div class="feedback-title">${plural.charAt(0).toUpperCase() + plural.slice(1)}!</div>
+        <div class="feedback-text" style="margin: 0.75rem 0;">
+          ${namesList}
+        </div>
         <p class="feedback-text">
-          Que alegria, <strong>${this.escapeHtml(name)}</strong>!<br>
-          Aguardamos você com muito carinho nesta noite especial.
+          Aguardamos ${names.length === 1 ? 'você' : 'vocês'} com muito carinho<br>
+          nesta noite especial. 🌟
         </p>
-        ${isDemo ? '<p class="feedback-text" style="font-size:0.75rem;opacity:0.5;margin-top:0.5rem;">[Modo demonstração — configure o Apps Script para salvar no Google Sheets]</p>' : ''}
+        ${isDemo ? '<p style="font-size:0.7rem;opacity:0.35;margin-top:0.75rem;">[Configure o Apps Script para salvar no Sheets]</p>' : ''}
       `;
     }
 
-    // Abrir WhatsApp
-    setTimeout(() => {
-      this.openWhatsApp(name);
-    }, 1800);
-
-    // Efeito de partículas comemorativo
+    // Efeito comemorativo
     this.celebrateEffect();
   }
 
-  openWhatsApp(name) {
-    const msg = encodeURIComponent(CONFIG.WHATSAPP_MSG);
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
-  }
-
   celebrateEffect() {
-    // Criar mini-partículas comemorativas
     const container = document.createElement('div');
-    container.style.cssText = `
-      position: fixed; inset: 0; pointer-events: none; z-index: 9000;
-    `;
+    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9000;';
     document.body.appendChild(container);
 
-    const colors = ['#60a5fa', '#c0c8d8', '#c9a96e', '#bfdbfe', '#e2e8f0'];
-
+    const colors = ['#60a5fa','#c0c8d8','#c9a96e','#bfdbfe','#e2e8f0'];
     for (let i = 0; i < 50; i++) {
       setTimeout(() => {
         const dot = document.createElement('div');
         const color = colors[Math.floor(Math.random() * colors.length)];
         const x = Math.random() * 100;
         const size = Math.random() * 8 + 4;
-
         dot.style.cssText = `
-          position: absolute;
-          left: ${x}%;
-          top: 100%;
-          width: ${size}px;
-          height: ${size}px;
-          background: ${color};
-          border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-          opacity: 1;
-          transform: rotate(${Math.random() * 360}deg);
-          animation: celebrate ${Math.random() * 1.5 + 1}s ease-out forwards;
+          position:absolute; left:${x}%; top:100%;
+          width:${size}px; height:${size}px;
+          background:${color}; border-radius:${Math.random()>0.5?'50%':'2px'};
+          animation: celebrate ${Math.random()*1.5+1}s ease-out forwards;
         `;
-
         container.appendChild(dot);
       }, i * 30);
     }
 
-    // Injetar keyframes da animação
     if (!document.getElementById('celebrate-keyframes')) {
       const style = document.createElement('style');
       style.id = 'celebrate-keyframes';
-      style.textContent = `
-        @keyframes celebrate {
-          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-          100% {
-            transform: translateY(-${window.innerHeight * 1.2}px) translateX(${(Math.random()-0.5)*200}px) rotate(${Math.random()*720}deg);
-            opacity: 0;
-          }
-        }
-      `;
+      style.textContent = `@keyframes celebrate {
+        0%   { transform: translateY(0) rotate(0deg); opacity:1; }
+        100% { transform: translateY(-${window.innerHeight*1.2}px) translateX(${(Math.random()-0.5)*200}px) rotate(720deg); opacity:0; }
+      }`;
       document.head.appendChild(style);
     }
 
     setTimeout(() => container.remove(), 4000);
   }
 
-  simulateDelay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  simulateDelay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   escapeHtml(str) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(str));
+    return d.innerHTML;
   }
 }
 
@@ -786,14 +848,13 @@ class InviteGenerator {
       ctx.shadowBlur = 0;
 
       /* --- "CONVIDA PARA OS SEUS" --- */
-      ctx.font = '400 11px Arial';
-      ctx.fillStyle = 'rgba(96,165,250,0.75)';
-      ctx.letterSpacing = '4px';
+      ctx.font = 'bold 12px Arial';
+      ctx.fillStyle = '#93c5fd';
       ctx.fillText('CONVIDA PARA OS SEUS', W/2, 195);
 
       /* --- "15 ANOS" --- */
-      ctx.font = '300 18px Arial';
-      ctx.fillStyle = 'rgba(192,200,216,0.85)';
+      ctx.font = 'bold 20px Arial';
+      ctx.fillStyle = '#e2e8f0';
       ctx.fillText('15 ANOS', W/2, 225);
 
       /* --- Linha divisória --- */
@@ -819,7 +880,7 @@ class InviteGenerator {
 
       /* --- "✦ DEBUTANTE ✦" --- */
       ctx.font = '11px Arial';
-      ctx.fillStyle = 'rgba(96,165,250,0.65)';
+      ctx.fillStyle = '#93c5fd';
       ctx.fillText('✦  DEBUTANTE  ✦', W/2, 355);
 
       /* --- Linha dupla ornamental --- */
@@ -830,25 +891,25 @@ class InviteGenerator {
       this._diamond(ctx, W/2, 388, 6, '#60a5fa');
 
       /* --- DATA --- */
-      ctx.font = '300 13px Arial';
-      ctx.fillStyle = 'rgba(192,200,216,0.75)';
+      ctx.font = 'bold 14px Arial';
+      ctx.fillStyle = '#bfdbfe';
       ctx.fillText('08 DE AGOSTO DE 2026', W/2, 430);
 
       /* --- HORÁRIO --- */
-      ctx.font = '400 20px Arial';
-      ctx.fillStyle = '#f1f5f9';
+      ctx.font = 'bold 22px Arial';
+      ctx.fillStyle = '#ffffff';
       ctx.fillText('Às 21h00', W/2, 462);
 
       /* --- Linha --- */
       this._hLine(ctx, W/2 - 50, W/2 + 50, 488, 'rgba(192,200,216,0.2)');
 
       /* --- LOCAL --- */
-      ctx.font = '500 15px Arial';
-      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 16px Arial';
+      ctx.fillStyle = '#ffffff';
       ctx.fillText('Fazendo a Festa Teens', W/2, 524);
 
-      ctx.font = '300 12px Arial';
-      ctx.fillStyle = 'rgba(192,200,216,0.65)';
+      ctx.font = '400 13px Arial';
+      ctx.fillStyle = '#bfdbfe';
       ctx.fillText('R. Prof. Augusto Lins e Silva, 123', W/2, 548);
       ctx.fillText('Boa Viagem  ·  Recife - PE', W/2, 570);
 
@@ -856,8 +917,8 @@ class InviteGenerator {
       this._hLine(ctx, W/2 - 80, W/2 + 80, 598, 'rgba(192,200,216,0.18)');
 
       /* --- TRAJE badge --- */
-      ctx.font = '11px Arial';
-      ctx.fillStyle = 'rgba(96,165,250,0.8)';
+      ctx.font = 'bold 12px Arial';
+      ctx.fillStyle = '#93c5fd';
       ctx.fillText('SOCIAL ESPORTE FINO', W/2, 630);
       /* Badge border */
       const bW = 190, bH = 28, bX = W/2 - bW/2, bY = 610;
@@ -867,8 +928,8 @@ class InviteGenerator {
       ctx.stroke();
 
       /* --- OBS azul --- */
-      ctx.font = 'italic 11px Georgia';
-      ctx.fillStyle = 'rgba(192,200,216,0.5)';
+      ctx.font = 'italic 12px Georgia';
+      ctx.fillStyle = 'rgba(192,200,216,0.85)';
       this._wrapText(ctx, 'Pedimos evitar tons de azul no traje,', W/2, 672, 380, 18);
       this._wrapText(ctx, 'pois esta será a cor da debutante.', W/2, 690, 380, 18);
 
@@ -876,13 +937,13 @@ class InviteGenerator {
       this._hLine(ctx, W/2 - 80, W/2 + 80, 730, 'rgba(192,200,216,0.15)');
 
       /* --- ✦ ✦ ✦ rodapé --- */
-      ctx.font = '12px Arial';
-      ctx.fillStyle = 'rgba(96,165,250,0.35)';
+      ctx.font = 'bold 13px Arial';
+      ctx.fillStyle = 'rgba(96,165,250,0.7)';
       ctx.fillText('✦   ✦   ✦', W/2, 760);
 
       /* --- Ano rodapé --- */
-      ctx.font = '10px Arial';
-      ctx.fillStyle = 'rgba(192,200,216,0.2)';
+      ctx.font = '11px Arial';
+      ctx.fillStyle = 'rgba(192,200,216,0.55)';
       ctx.fillText('2026  ·  RECIFE  ·  PERNAMBUCO', W/2, 800);
 
       /* --- Salvar canvas --- */
@@ -1128,6 +1189,8 @@ function init() {
   if (mapsBtn) {
     mapsBtn.href = CONFIG.EVENT.mapsUrl;
   }
+
+  // WhatsApp flutuante removido conforme solicitado
 
   // 10. Inicializar nome da debutante dinamicamente
   const nameEl = document.querySelector('.hero-name');

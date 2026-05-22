@@ -424,25 +424,71 @@
         <i class="fas fa-envelope-open-text"></i>
       </div>
 
-      <!-- Formulário RSVP -->
-      <form id="rsvp-form" class="rsvp-form" novalidate aria-label="Formulário de confirmação de presença">
+      <!-- STEP 1: Quantidade de convidados -->
+      <div id="rsvp-step-qty">
 
-        <div class="input-wrapper">
-          <input
-            type="text"
-            id="rsvp-name"
-            name="nome"
-            class="input-premium"
-            placeholder="Seu nome completo"
-            autocomplete="name"
-            maxlength="100"
-            aria-label="Nome completo"
-            aria-required="true"
-            aria-describedby="rsvp-error-msg"
-          />
-          <div class="input-glow" aria-hidden="true"></div>
-          <span id="rsvp-error-msg" class="field-error" role="alert"></span>
+        <p style="
+          font-family: var(--font-serif);
+          font-style: italic;
+          font-size: 1rem;
+          color: var(--silver);
+          opacity: 0.8;
+          text-align: center;
+          margin-bottom: 1.25rem;
+          line-height: 1.6;
+        ">
+          Quantas pessoas deseja confirmar?
+        </p>
+
+        <div style="display:flex; align-items:center; justify-content:center; gap:1rem; margin-bottom:1.25rem;">
+          <button id="qty-minus" type="button" aria-label="Diminuir quantidade" style="
+            width:40px; height:40px; border-radius:50%; border:1px solid var(--glass-border);
+            background:transparent; color:var(--crystal-blue); font-size:1.2rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition: all 0.2s ease;
+          ">−</button>
+
+          <span id="qty-display" style="
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--silver-glow);
+            min-width: 2.5rem;
+            text-align: center;
+            filter: drop-shadow(0 0 10px rgba(96,165,250,0.3));
+          ">1</span>
+
+          <button id="qty-plus" type="button" aria-label="Aumentar quantidade" style="
+            width:40px; height:40px; border-radius:50%; border:1px solid var(--glass-border);
+            background:transparent; color:var(--crystal-blue); font-size:1.2rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition: all 0.2s ease;
+          ">+</button>
         </div>
+
+        <button id="qty-confirm" type="button" class="btn-rsvp" aria-label="Confirmar quantidade">
+          <i class="fas fa-arrow-right" style="margin-right:0.5rem;" aria-hidden="true"></i>
+          Continuar
+        </button>
+
+      </div>
+
+      <!-- STEP 2: Formulário com campos dinâmicos -->
+      <form id="rsvp-form" class="rsvp-form" novalidate aria-label="Formulário de confirmação de presença" style="display:none;">
+
+        <p id="rsvp-form-title" style="
+          font-family: var(--font-serif);
+          font-style: italic;
+          font-size: 0.95rem;
+          color: var(--silver);
+          opacity: 0.75;
+          text-align: center;
+          margin-bottom: 1rem;
+        "></p>
+
+        <!-- campos gerados dinamicamente pelo JS -->
+        <div id="rsvp-names-container"></div>
+
+        <span id="rsvp-error-msg" class="field-error" role="alert" style="text-align:center; display:block;"></span>
 
         <button
           type="submit"
@@ -458,6 +504,15 @@
             <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
             &nbsp;Enviando…
           </span>
+        </button>
+
+        <button type="button" id="rsvp-back" style="
+          width:100%; padding:0.6rem; background:transparent; border:none;
+          color:var(--silver); opacity:0.4; font-family:var(--font-sans);
+          font-size:0.75rem; letter-spacing:0.1em; cursor:pointer; margin-top:0.25rem;
+          transition: opacity 0.2s;
+        " onmouseenter="this.style.opacity=0.8" onmouseleave="this.style.opacity=0.4">
+          ← Alterar quantidade
         </button>
 
       </form>
@@ -476,8 +531,7 @@
       opacity: 0.3;
       margin-top: 1rem;
     ">
-      Sua confirmação será registrada e você receberá<br>
-      um lembrete pelo WhatsApp
+      Sua confirmação será registrada<br>na nossa lista de convidados ✨
     </p>
 
   </section>
@@ -573,17 +627,7 @@
      BOTÕES FLUTUANTES
      ================================================ -->
 
-<!-- WhatsApp -->
-<a
-  href="https://wa.me/?text=Olá!%20Confirmo%20minha%20presença%20na%20festa%20de%2015%20anos%20✨"
-  target="_blank"
-  rel="noopener noreferrer"
-  class="whatsapp-float"
-  aria-label="Compartilhar no WhatsApp"
-  title="WhatsApp"
->
-  <i class="fab fa-whatsapp" aria-hidden="true"></i>
-</a>
+
 
 <!-- Música -->
 <button
