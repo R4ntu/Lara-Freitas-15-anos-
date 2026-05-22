@@ -12,7 +12,7 @@
 const CONFIG = {
   // URL do Google Apps Script após publicar como Web App
   // Substitua pela URL gerada na implantação
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyPrUlAykuA_aPq8ZSR55tm4do2nvXeC4YtouRv5HFdg1puNpAhGYZTuRkm2QgJ7PGe/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/SEU_ID_AQUI/exec',
 
   // Data e hora da festa (ano, mês-1, dia, hora, minuto)
   // Mês: 0=Jan, 1=Feb, ..., 7=Agosto
@@ -31,7 +31,7 @@ const CONFIG = {
   },
 
   // Mensagem WhatsApp pós-confirmação
-  WHATSAPP_MSG: 'Olá! Confirmo minha presença na festa de 15 anos da Lara ✨',
+  WHATSAPP_MSG: 'Olá! Confirmo minha presença na festa de 15 anos da Lara Freitas ✨',
 
   // Duração da tela de intro (ms)
   INTRO_DURATION: 4200,
@@ -324,7 +324,7 @@ class MusicPlayer {
     // URL de música royalty-free — substitua por uma URL de áudio real
     // Sugestões de fontes gratuitas: Pixabay, Free Music Archive, ccMixter
     // Exemplo: 'https://www.bensound.com/bensound-music/bensound-romantic.mp3'
-    this.audioSrc = 'https://pixabay.com/music/modern-classical-royal-majestic-waltz-music-529580/'; // Deixe vazio ou coloque URL da música
+    this.audioSrc = 'musica.mp3';
 
     this.init();
   }
@@ -954,6 +954,7 @@ function init() {
   if (nameEl) {
     nameEl.setAttribute('data-name', CONFIG.DEBUTANTE_NAME);
   }
+    nameEl.textContent = CONFIG.DEBUTANTE_NAME;
 
   console.log('%c✨ Convite Digital — 15 Anos ✨', 'color: #60a5fa; font-size: 14px; font-weight: bold;');
 }
