@@ -1415,3 +1415,222 @@ footer {
 .music-float {
   bottom: 1.25rem !important;
 }
+
+/* ================================================
+   GALERIA — ARTE ELEGANTE (sem fotos)
+   ================================================ */
+
+.gallery-item-main {
+  grid-column: 1 / -1;
+  aspect-ratio: 16/9;
+}
+
+.gallery-art {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  border-radius: 12px;
+}
+
+.gallery-art-1 {
+  background: linear-gradient(135deg,
+    #040d1a 0%, #0a1628 30%, #0d2150 60%, #1a3a7c 100%);
+}
+.gallery-art-2 {
+  background: linear-gradient(160deg,
+    #040d1a 0%, #0d2150 50%, #0a1628 100%);
+}
+.gallery-art-3 {
+  background: linear-gradient(200deg,
+    #060f1e 0%, #0a1628 40%, #0d2150 100%);
+}
+
+.gallery-art-inner {
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Cristais decorativos */
+.gallery-crystal {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  animation: crystalPulse 5s ease-in-out infinite;
+}
+.gallery-crystal-1 {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(37,99,235,0.45) 0%, transparent 70%);
+  top: -30px; right: -30px;
+  animation-delay: 0s;
+}
+.gallery-crystal-2 {
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(192,200,216,0.25) 0%, transparent 70%);
+  bottom: -20px; left: 20px;
+  animation-delay: -2s;
+}
+.gallery-crystal-3 {
+  width: 80px; height: 80px;
+  background: radial-gradient(circle, rgba(96,165,250,0.35) 0%, transparent 70%);
+  top: 40%; left: 15%;
+  animation-delay: -4s;
+}
+.gallery-crystal-4 {
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(37,99,235,0.4) 0%, transparent 70%);
+  top: -10px; left: 50%;
+  animation-delay: -1s;
+}
+.gallery-crystal-5 {
+  width: 90px; height: 90px;
+  background: radial-gradient(circle, rgba(96,165,250,0.4) 0%, transparent 70%);
+  bottom: -10px; right: 20%;
+  animation-delay: -3s;
+}
+
+@keyframes crystalPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50%       { transform: scale(1.15); opacity: 1; }
+}
+
+/* Monograma central na foto principal */
+.gallery-monogram {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 15vw, 7rem);
+  font-weight: 600;
+  background: linear-gradient(135deg,
+    rgba(241,245,249,0.15) 0%,
+    rgba(96,165,250,0.3) 40%,
+    rgba(192,200,216,0.2) 70%,
+    rgba(37,99,235,0.25) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(96,165,250,0.4));
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.05em;
+  animation: monogramFloat 6s ease-in-out infinite;
+}
+
+@keyframes monogramFloat {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 30px rgba(96,165,250,0.4)); }
+  50%       { transform: translateY(-6px); filter: drop-shadow(0 0 45px rgba(96,165,250,0.6)); }
+}
+
+/* Ornamento ✦ e ♛ nas fotos menores */
+.gallery-ornament {
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  color: rgba(96, 165, 250, 0.35);
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 15px rgba(96,165,250,0.3));
+  animation: monogramFloat 5s ease-in-out infinite;
+}
+
+/* ================================================
+   CORREÇÃO GERAL DE CORES — FONTES MAIS CLARAS
+   ================================================ */
+
+/* Subtítulos de seção mais visíveis */
+.section-subtitle {
+  color: var(--silver-bright) !important;
+  opacity: 0.75 !important;
+}
+
+/* Labels de seção mais visíveis */
+.section-label {
+  opacity: 0.9 !important;
+}
+
+/* Textos gerais dentro dos cards */
+.glass-card p,
+.glass-card span:not(.section-label):not(.event-info-label) {
+  color: var(--silver-bright);
+}
+
+/* Mensagem emocional */
+.message-quote {
+  color: var(--silver-bright) !important;
+  opacity: 0.95 !important;
+}
+
+.message-sig {
+  opacity: 0.85 !important;
+  color: var(--crystal-blue) !important;
+}
+
+/* Endereço */
+.location-address {
+  color: var(--silver-bright) !important;
+  opacity: 0.9 !important;
+}
+
+/* Traje observação */
+.dress-obs p {
+  color: var(--silver-bright) !important;
+  opacity: 0.9 !important;
+}
+
+/* Event info values */
+.event-info-value {
+  color: #ffffff !important;
+}
+
+.event-info-label {
+  color: var(--silver-bright) !important;
+  opacity: 0.65 !important;
+}
+
+/* Countdown labels */
+.countdown-label {
+  color: var(--silver-bright) !important;
+  opacity: 0.7 !important;
+}
+
+/* Hero supra */
+.hero-supra {
+  color: var(--silver-bright) !important;
+  opacity: 0.85 !important;
+}
+
+/* Hero date */
+.hero-date-display {
+  color: var(--silver-bright) !important;
+  opacity: 0.9 !important;
+}
+
+/* Feedback success */
+.feedback-text {
+  color: var(--silver-bright) !important;
+  opacity: 0.95 !important;
+}
+
+.feedback-title {
+  color: #ffffff !important;
+}
+
+/* Footer */
+.footer-text {
+  color: var(--silver-bright) !important;
+  opacity: 0.6 !important;
+}
+
+/* Input placeholder mais visível */
+.input-premium::placeholder {
+  color: var(--silver) !important;
+  opacity: 0.55 !important;
+}
+
+/* Label dos convidados no RSVP */
+#rsvp-form-title {
+  color: var(--silver-bright) !important;
+  opacity: 0.9 !important;
+}
+
+/* Dress obs strong */
+.dress-obs strong {
+  filter: brightness(1.3);
+}

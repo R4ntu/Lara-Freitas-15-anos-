@@ -684,7 +684,7 @@ class RSVPForm {
           Aguardamos ${names.length === 1 ? 'você' : 'vocês'} com muito carinho<br>
           nesta noite especial. 🌟
         </p>
-        ${isDemo ? '<p style="font-size:0.7rem;opacity:0.35;margin-top:0.75rem;">[Configure o Apps Script para salvar no Sheets]</p>' : ''}
+
       `;
     }
 
@@ -1174,6 +1174,23 @@ function init() {
 
   // 5. Música
   const music = new MusicPlayer();
+
+  // Tenta iniciar música no primeiro gesto do usuário (iOS/Android exigem interação)
+  const startMusicOnce = () => {
+    if (!music.playing && music.audio) {
+      music.audio.play()
+        .then(() => {
+          music.playing = true;
+          music.fadeIn();
+          music.updateUI();
+        })
+        .catch(() => {});
+    }
+    document.removeEventListener('touchstart', startMusicOnce);
+    document.removeEventListener('click', startMusicOnce);
+  };
+  document.addEventListener('touchstart', startMusicOnce, { once: true });
+  document.addEventListener('click', startMusicOnce, { once: true });
 
   // 6. RSVP
   const rsvp = new RSVPForm();

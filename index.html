@@ -214,13 +214,21 @@
       ">✦ ✦ ✦</div>
 
       <blockquote class="message-quote">
-        Há momentos que guardam uma magia especial —
-        aqueles em que o tempo parece se encantar
-        e cada riso, cada abraço, cada olhar
-        se transforma em memória eterna.
+        Há momentos que marcam para sempre a nossa história.
         <br><br>
-        Este é um desses momentos.
-        E eu quero celebrá-lo ao seu lado.
+        Entre sonhos, descobertas e conquistas, chegou o instante
+        de celebrar uma nova etapa da minha vida.
+        <br><br>
+        Meus 15 anos representam muito mais do que uma data:
+        são a celebração das memórias que construí,
+        das pessoas que amo e dos sonhos que ainda vou realizar.
+        <br><br>
+        Quero viver essa noite inesquecível ao lado
+        de quem faz parte da minha trajetória.
+        <br><br>
+        <span style="color: var(--silver-glow); font-style: italic;">
+          Sua presença tornará este momento ainda mais especial.
+        </span>
       </blockquote>
 
       <p class="message-sig">— com todo amor, Lara Freitas</p>
@@ -342,6 +350,8 @@
 
   <!-- ============================================
        GALERIA DE FOTOS
+       Para adicionar fotos: substitua as divs .gallery-art
+       por <img src="sua-foto.jpg" /> dentro de .gallery-item
        ============================================ -->
   <section class="gallery-section section" aria-labelledby="gallery-title">
 
@@ -355,46 +365,39 @@
 
     <div class="gallery-grid" data-aos="fade-up" data-aos-delay="150">
 
-      <!-- Item 1 — Principal (substitua pelo src da foto real) -->
-      <div class="gallery-item" tabindex="0" aria-label="Foto principal da debutante">
-        <div class="gallery-placeholder">
-          <i class="fas fa-camera" aria-hidden="true"></i>
-          <span>Foto Principal</span>
-        </div>
-        <!-- Descomente e adicione src="caminho/da/foto.jpg" quando tiver as fotos:
-        <img src="foto-1.jpg" alt="Lara Freitas" loading="lazy" />
-        -->
-      </div>
-
-      <!-- Item 2 -->
-      <div class="gallery-item" tabindex="0" aria-label="Foto 2">
-        <div class="gallery-placeholder">
-          <i class="fas fa-images" aria-hidden="true"></i>
-          <span>Foto 2</span>
+      <!-- FOTO 1 principal — substitua por: <img src="foto-1.jpg" alt="Lara Freitas" /> -->
+      <div class="gallery-item gallery-item-main">
+        <div class="gallery-art gallery-art-1" aria-hidden="true">
+          <div class="gallery-art-inner">
+            <div class="gallery-crystal gallery-crystal-1"></div>
+            <div class="gallery-crystal gallery-crystal-2"></div>
+            <div class="gallery-crystal gallery-crystal-3"></div>
+            <div class="gallery-monogram">L</div>
+          </div>
         </div>
       </div>
 
-      <!-- Item 3 -->
-      <div class="gallery-item" tabindex="0" aria-label="Foto 3">
-        <div class="gallery-placeholder">
-          <i class="fas fa-images" aria-hidden="true"></i>
-          <span>Foto 3</span>
+      <!-- FOTO 2 — substitua por: <img src="foto-2.jpg" alt="Lara Freitas" /> -->
+      <div class="gallery-item">
+        <div class="gallery-art gallery-art-2" aria-hidden="true">
+          <div class="gallery-art-inner">
+            <div class="gallery-crystal gallery-crystal-4"></div>
+            <div class="gallery-ornament">✦</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOTO 3 — substitua por: <img src="foto-3.jpg" alt="Lara Freitas" /> -->
+      <div class="gallery-item">
+        <div class="gallery-art gallery-art-3" aria-hidden="true">
+          <div class="gallery-art-inner">
+            <div class="gallery-crystal gallery-crystal-5"></div>
+            <div class="gallery-ornament">♛</div>
+          </div>
         </div>
       </div>
 
     </div>
-
-    <p style="
-      text-align: center;
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--silver);
-      opacity: 0.35;
-      margin-top: 1rem;
-    ">
-      Adicione suas fotos no arquivo index.html
-    </p>
 
   </section>
 
@@ -531,7 +534,7 @@
       opacity: 0.3;
       margin-top: 1rem;
     ">
-      Sua confirmação será registrada<br>na nossa lista de convidados ✨
+      Aguardamos você com muito carinho ✨
     </p>
 
   </section>
